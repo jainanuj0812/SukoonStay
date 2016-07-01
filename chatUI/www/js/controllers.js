@@ -3,7 +3,8 @@
 
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $ionicPopover, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $ionicPopover, $timeout, callApi, $window) {
+    
     // Form data for the login modal
     $scope.loginData = {};
     $scope.isExpanded = false;
@@ -87,7 +88,43 @@ angular.module('starter.controllers', [])
     };
 })
 
-.controller('LoginCtrl', function($scope, $timeout, $stateParams, ionicMaterialInk) {
+.controller('LoginCtrl', function($scope, $timeout, $stateParams, ionicMaterialInk, $state, $window) {
+    
+    $scope.doAuth = function(){
+        var url = 'http://localhost:3000/auth/facebook';
+        
+        if($window.cordova) {
+            url += '?redirect' + encodeURIComponent('http://i.imug.com/XseoGPD.png');
+        } else {
+            url += '?redirect' + encodeURIComponent(window.location.href);   
+        }
+        
+        var ref = window.open(url, '_blank', 'location=no');
+        
+        ref.addEventListener('loadstop', function(ev) {
+            if(ev.url.indexOf('/auth/facebook') == -1) {
+                ref.close();
+                $state.go('app.profile');
+                
+            }
+        })
+        
+        ref.onload = function(ev){
+            ref.close();
+            $state.go('app.profile');
+        }
+        
+           /*console.log("called");
+           var resource = callApi.doAuth();
+            resource.get({}, function(){
+                
+            }, function(){
+                
+            })*/
+              
+              
+    }
+    
     $scope.$parent.clearFabs();
     $timeout(function() {
         $scope.$parent.hideHeader();
@@ -114,8 +151,15 @@ angular.module('starter.controllers', [])
     ionicMaterialInk.displayEffect();
 })
 
-.controller('ProfileCtrl', function($scope, $stateParams, $timeout, ionicMaterialMotion, ionicMaterialInk) {
+.controller('ProfileCtrl', function($scope, $stateParams, $timeout, ionicMaterialMotion, ionicMaterialInk, callApi, pojoFactory) {
     // Set Header
+    //getUserData
+    
+    var user = pojoFactory.getUser();
+    user.$promise.then(function(res){
+        $scope.user = res.userProfile;
+    });
+    
     $scope.$parent.showHeader();
     $scope.$parent.clearFabs();
     $scope.isExpanded = false;
@@ -139,12 +183,13 @@ angular.module('starter.controllers', [])
     ionicMaterialInk.displayEffect();
 })
 
-.controller('ActivityCtrl', function($scope, $stateParams, $timeout, ionicMaterialMotion, ionicMaterialInk) {
+.controller('ActivityCtrl', function($scope, $stateParams, $timeout, ionicMaterialMotion, ionicMaterialInk, callApi, pojoFactory) {
     $scope.$parent.showHeader();
     $scope.$parent.clearFabs();
     $scope.isExpanded = true;
     $scope.$parent.setExpanded(true);
     $scope.$parent.setHeaderFab('right');
+    $scope.post = '';
 
     $timeout(function() {
         ionicMaterialMotion.fadeSlideIn({
@@ -154,6 +199,31 @@ angular.module('starter.controllers', [])
 
     // Activate ink for controller
     ionicMaterialInk.displayEffect();
+    
+    var user = pojoFactory.getUser();
+    user.$promise.then(function(res){
+        $scope.user = res.userProfile;
+    });
+    
+    $scope.getPost = function() {
+        var resource = callApi.getPosts();
+        resource.get({}, function(res){
+            $scope.posts = res.posts;
+        }, function(err){
+            
+        });
+    }
+    $scope.getPost();
+    
+    $scope.addPost = function(post) {
+        var postMap = {'post': post, 'postById' : $scope.user._id, 'post_date' : new Date()}
+        var resource = callApi.addPost();
+        resource.get({postMap}, function(res){
+            $scope.posts = res.posts;
+        }, function(err){
+            
+        });
+    }
 })
 
 .controller('GalleryCtrl', function($scope, $stateParams, $timeout, ionicMaterialInk, ionicMaterialMotion) {
@@ -175,4 +245,43 @@ angular.module('starter.controllers', [])
 
 })
 
-;
+.controller('UpdateProfileCtrl', function($scope, $stateParams, $timeout, ionicMaterialInk, ionicMaterialMotion, callApi, pojoFactory) {
+    $scope.$parent.showHeader();
+    $scope.$parent.clearFabs();
+    $scope.isExpanded = true;
+    $scope.$parent.setExpanded(false);
+    $scope.$parent.setHeaderFab(true);
+    
+    var user = pojoFactory.getUser();
+    user.$promise.then(function(res){
+        $scope.user = res.userProfile;
+    });
+    
+    $scope.updateProfile  = function(user) {
+        var resource = callApi.updateUserProfile();
+        resource.get({user}, function(res){
+            $scope.user = res.userProfile;
+        }, function(err){
+            
+        });
+    }
+    
+     ionicMaterialInk.displayEffect();
+}).factory('pojoFactory', function(callApi) {
+    var user = {};
+    return {
+        getUser : function() {
+            if (user) {
+                var resource = callApi.getUserProfile();
+                user = resource.get({}, function(res){
+                    
+                }, function(err){
+            
+                }); 
+                return user;
+            } else {
+                return user;
+            }
+        }
+    }
+});

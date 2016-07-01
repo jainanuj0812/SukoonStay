@@ -1,15 +1,6 @@
-module.exports = function(passport, FacebookStrategy, config, mongoose){
-   
-    var chatUser = new mongoose.Schema({
-        profileID: String,
-        fullname : String,
-        profilePic : String
-    });
-    
-    var userModel = mongoose.model('chatUser', chatUser);
-    
+module.exports = function(passport, FacebookStrategy, config, mongoose, userModel){
     passport.serializeUser(function(user, done){
-        done(null, user.id);
+        done(null, user);
     });
     
     passport.deserializeUser(function(id, done){
@@ -22,7 +13,7 @@ module.exports = function(passport, FacebookStrategy, config, mongoose){
        clientID : config.fb.appID,
        clientSecret : config.fb.appSecret,
        callbackURL : config.fb.callbackURL,
-       profileFields : ['id', 'displayName', 'photos']
+       profileFields : ['id', 'displayName', 'photos', 'emails']
    }, function(accessToken, refreshToken, profile, done){
       //chech if user exist in database 
        //if not return one and make a profile, if exist return the profile
@@ -34,6 +25,7 @@ module.exports = function(passport, FacebookStrategy, config, mongoose){
                 var newChatUser = new userModel({
                     profileID : profile.id,
                     fullname : profile.displayName,
+                    emailId: profile.emails[0].value,
                     profilePic : profile.photos[0].value || ''
                 });
                 

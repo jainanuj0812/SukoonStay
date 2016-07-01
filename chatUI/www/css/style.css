@@ -59,7 +59,13 @@ p {
 .menu-open .ion-navicon:before {
     content: "\f2ca";
 }
-
+textarea {	
+    width: 97%;
+	height: 20%;
+	margin: auto;
+	margin-top: 40px;
+	border: solid 2px lightcoral;
+}
 
 /* Login
 ==================================*/

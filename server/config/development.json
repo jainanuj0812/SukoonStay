@@ -9,5 +9,6 @@
     "redirectURL" : {
         "success" : "http://localhost:8100/#/app/profile",
         "failure" : "http://localhost:8100/#/app/login"
-    }
+    },
+    "host" : "http://localhost:3000" 
 }

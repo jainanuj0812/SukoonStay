@@ -4,9 +4,9 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'ionic-material', 'ionMdInput'])
+angular.module('starter', ['ionic', 'starter.controllers', 'ionic-material', 'ionMdInput', 'ngResource', 'getResource', 'services', 'btford.socket-io'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope, $state, callApi) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -17,10 +17,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-material', 'io
             // org.apache.cordova.statusbar required
             StatusBar.styleDefault();
         }
+        
     });
 })
 
-.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $httpProvider) {
 
     // Turn off caching for demo simplicity's sake
     $ionicConfigProvider.views.maxCache(0);
@@ -29,6 +30,24 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-material', 'io
     // Turn off back button text
     $ionicConfigProvider.backButton.previousTitleText(false);
     */
+    $httpProvider.interceptors.push(function($location){
+        return {
+            request : function(req) {
+                
+                if(req.url.charAt(0) == '/') {
+                    req.url = 'http://localhost:3000' + req.url;
+                    req.withCredentials = true;
+                }
+                return req;
+            },
+            response : function(res) {
+              if(res.data != undefined && res.data.isAuth != undefined) {
+                  $location.path('/login');
+              }
+              return res;
+            }
+        }
+    })
 
     $stateProvider.state('app', {
         url: '/app',
@@ -103,6 +122,19 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-material', 'io
             }
         }
     })
+    
+    .state('app.updateProfile', {
+        url: '/updateProfile',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/updateProfile.html',
+                controller: 'UpdateProfileCtrl'
+            },
+            'fabContent': {
+                template: ''
+            }
+        }
+    })
 
     .state('app.profile', {
         url: '/profile',
@@ -125,4 +157,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-material', 'io
 
     // if none of the above states are matched, use this as the fallback
     $urlRouterProvider.otherwise('/app/login');
+}).factory('mySocket', function (socketFactory) {
+  var host = 'http://localhost:3000';
+    var myIoSocket = io.connect(host+'/roomList');
+    
+    mySocket = socketFactory({
+        ioSocket : myIoSocket
+    });
+  return mySocket;
 });
