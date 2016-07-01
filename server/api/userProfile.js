@@ -1,7 +1,6 @@
 module.exports = function (mongoose, userModel, userPostModel) {
     return {
         getUserProfile  : function(req, res, next) {
-            console.log(req.user);
             userModel.findById({'_id' : req.user._id}, function (err, doc) {
                 if (err) {
                     
