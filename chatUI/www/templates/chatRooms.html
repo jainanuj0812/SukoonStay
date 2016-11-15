@@ -1,0 +1,19 @@
+<ion-view view-title="Chat Rooms">
+    <ion-content>
+        <div class="item card-item" collection-repeat="room in roomList">
+            <div ui-sref="app.gallery" class="card stable-bg ink ink-dark">
+                <div class="item item-avatar item-text-wrap">
+                    <span class="avatar" ></span>
+                    <strong>{{room.roomName}}</strong>
+                    <div class="card-footer text-right">
+                        <i class="icon ion-chatbubble positive"></i> 2
+                        <i class="icon ion-heart assertive"></i> 4
+                        <div class="pull-left">
+                            <i class="icon ion-clock"></i>{{}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

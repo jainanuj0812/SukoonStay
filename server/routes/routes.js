@@ -1,12 +1,19 @@
-module.exports = function(express, app, passport, config, userModel, userPostModel){
+module.exports = function(express, app, passport, config, userModel, userPostModel, chatRoomModel){
     var router = express.Router();
-    var user = require('../api/userProfile.js')(mongoose, userModel, userPostModel);
+    var user = require('../api/userProfile.js')(config, userModel, userPostModel, chatRoomModel);
+    var chat = require('../api/chatRooms.js')(config, chatRoomModel);
+    
     router.get('/auth/facebook', passport.authenticate('facebook', { scope: [ 'email' ] }));
     
     router.get('/auth/facebook/callback', passport.authenticate('facebook', {
         successRedirect : config.redirectURL.success,
         failureRedirect : config.redirectURL.failure
     }));
+    
+    router.get('/logout', function(req, res, next){
+        req.logout();
+        res.status(200).end();
+    });
     
     router.get('/getUserProfile', isLoggedIn, user.getUserProfile, function(req, res, next){
         
@@ -25,6 +32,12 @@ module.exports = function(express, app, passport, config, userModel, userPostMod
     });
     
     router.get('/getUserDetails', isLoggedIn, user.getUserDetails, function(req, res, next){
+        
+    });
+    router.post('/uploadProfilePic', isLoggedIn, user.uploadProfilePic, function(req, res, next){
+        
+    });
+    router.get('/chatRooms', isLoggedIn, chat.getChatRooms, function(req, res, next){
         
     });
     

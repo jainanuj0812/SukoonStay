@@ -26,7 +26,7 @@ module.exports = function(passport, FacebookStrategy, config, mongoose, userMode
                     profileID : profile.id,
                     fullname : profile.displayName,
                     emailId: profile.emails[0].value,
-                    profilePic : profile.photos[0].value || ''
+                    profilePic : "https://graph.facebook.com/me/picture?width=300&height=300&access_token="+accessToken || ''
                 });
                 
                 newChatUser.save(function(){

@@ -42,7 +42,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-material', 'io
             },
             response : function(res) {
               if(res.data != undefined && res.data.isAuth != undefined) {
-                  $location.path('/login');
+                  console.log("===callled=====");
+                  $location.path('/app/login');
               }
               return res;
             }
@@ -136,6 +137,32 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-material', 'io
         }
     })
 
+    .state('app.createChatRoom', {
+        url: '/createChatRoom',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/createChatRoom.html',
+                controller: 'createChatRoomCtrl'
+            },
+            'fabContent': {
+                template: ''
+            }
+        }
+    })
+
+    .state('app.chatRooms', {
+        url: '/chatRooms',
+        views: {
+            'menuContent': {
+                templateUrl: 'templates/chatRooms.html',
+                controller: 'createChatRoomCtrl'
+            },
+            'fabContent': {
+                template: ''
+            }
+        }
+    })
+
     .state('app.profile', {
         url: '/profile',
         views: {
@@ -156,13 +183,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ionic-material', 'io
     ;
 
     // if none of the above states are matched, use this as the fallback
-    $urlRouterProvider.otherwise('/app/login');
+    $urlRouterProvider.otherwise('/app/profile');
 }).factory('mySocket', function (socketFactory) {
-  var host = 'http://localhost:3000';
-    var myIoSocket = io.connect(host+'/roomList');
-    
-    mySocket = socketFactory({
-        ioSocket : myIoSocket
-    });
+    mySocket = socketFactory();
   return mySocket;
 });

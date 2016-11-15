@@ -1,8 +1,13 @@
 <ion-view view-title="Profile">
     <ion-content ng-class="{expanded:$scope.isExpanded}">
         <div class="hero slide-up" style="background-image: url('img/profile-bg.jpg');">
-            <div class="content">
-                <div class="avatar" style="background-image: url({{user.profilePic}});"></div>
+            <div class="content" ng-init="hideDropdown = true">
+                <div class="avatar" style="background-image: url({{user.profilePic}});" ng-click="hideDropdown = !hideDropdown">
+                    <div id="myDropdown" class="dropdown-content" ng-hide="hideDropdown">
+                        <input type="file" name="file" custom-on-change="uploadFile">
+                    </div>
+                </div>
+                
                 <h3><a class="light">{{user.fullname}}</a></h3>
                 <h4>{{user.emailId}}</h4>
             </div>
