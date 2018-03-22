@@ -1,0 +1,6 @@
+{
+  "cordovaPlatforms": [],
+   "cordovaPlugins": [
+    "org.apache.cordova.inappbrowser"
+  ]
+}

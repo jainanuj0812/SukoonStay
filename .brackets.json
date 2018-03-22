@@ -1,0 +1,8 @@
+{
+    "jscodehints.detectedExclusions": [
+        "/home/anuj/Desktop/Untitled Folder/node/SukoonStay/chatUI/www/js/controllers.js",
+        "/home/anuj/Desktop/Untitled Folder/node/SukoonStay/chatUI/www/js/app.js",
+        "/home/anuj/SukoonStay/server/app.js",
+        "/home/anuj/SukoonStay/chatUI/www/js/services.js"
+    ]
+}
